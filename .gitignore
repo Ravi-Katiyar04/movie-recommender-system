@@ -100,3 +100,5 @@ coverage/
 # Notebook outputs
 *.nbconvert.ipynb
 
+backend/models/similarity.pkl
+
