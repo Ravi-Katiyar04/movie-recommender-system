@@ -13,6 +13,8 @@ MODEL_VERSION = os.getenv("MODEL_VERSION")
 movies = pickle.load(open("models/movies.pkl", "rb"))
 similarity = joblib.load("models/similarity.joblib")
 
+print("Models loaded successfully")
+print(f"Movies: {len(movies)}")
 
 def get_movie_details(movie_id):
     
@@ -50,7 +52,12 @@ def get_movie_details(movie_id):
 
 def recommender(movie):
     
-    movie_index = movies[movies['title'] == movie].index[0]
+    filtered = movies[movies["title"] == movie]
+
+    if filtered.empty:
+        raise ValueError(f"Movie '{movie}' not found")
+
+    movie_index = filtered.index[0]
 
     distances = similarity[movie_index]
 
