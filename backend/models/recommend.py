@@ -1,6 +1,7 @@
 import os
 import pickle
 import requests
+import joblib
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,7 +11,7 @@ API_KEY = os.getenv("YOUR_API_KEY")
 MODEL_VERSION = os.getenv("MODEL_VERSION")
 
 movies = pickle.load(open("models/movies.pkl", "rb"))
-similarity = pickle.load(open("models/similarity.pkl", "rb"))
+similarity = joblib.load("models/similarity.joblib")
 
 
 def get_movie_details(movie_id):
