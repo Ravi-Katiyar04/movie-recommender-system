@@ -85,6 +85,11 @@ function App() {
           </div>
         </section>
 
+        <p className="mt-4 text-center text-sm text-amber-300">
+          ⚠️ Note: If the application doesn't load movie posters or recommendations,
+          please connect to a VPN. TMDB API access is currently restricted in India.
+        </p>
+
         {/* Loading */}
         {loading && (
           <div className="flex justify-center mt-16">
