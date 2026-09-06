@@ -246,6 +246,9 @@ The build output is generated in the `frontend/dist` folder.
 
 ## Notes
 
+> [!IMPORTANT]
+> If you are in India and TMDB poster or metadata requests fail, use a VPN. TMDB access has been restricted in some regions, and the app may show incomplete movie information or no posters without a VPN connection.
+
 - The recommendation engine uses a precomputed similarity matrix stored in `backend/models/similarity.joblib`.
 - The movie search is based on exact title matches in the dataset.
 - If TMDB poster or metadata requests fail, the app may return incomplete information or no images.
