@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import traceback
 from fastapi.middleware.cors import CORSMiddleware
-from models.recommend import recommender, get_movie_details, MODEL_VERSION
+from models.recommend import recommender, get_movie_details, get_movie_suggestions, MODEL_VERSION
 from schema.movie_input import MovieRequest
 
 app = FastAPI()
@@ -26,6 +26,24 @@ def health_check():
     }
 
 
+@app.get("/search")
+def search_movies(q: str = "", limit: int = 8):
+    try:
+        suggestions = get_movie_suggestions(q, limit)
+        return {
+            "success": True,
+            "query": q,
+            "suggestions": suggestions
+        }
+    except Exception as e:
+        traceback.print_exc()
+        return {
+            "success": False,
+            "message": str(e),
+            "suggestions": []
+        }
+
+
 @app.post("/recommend")
 def get_recommendations(request: MovieRequest):
     try:
@@ -42,4 +60,4 @@ def get_recommendations(request: MovieRequest):
         return {
             "success": False,
             "message": str(e)
-        }
+        }

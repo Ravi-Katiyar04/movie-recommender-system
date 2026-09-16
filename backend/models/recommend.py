@@ -13,8 +13,38 @@ MODEL_VERSION = os.getenv("MODEL_VERSION")
 movies = pickle.load(open("models/movies.pkl", "rb"))
 similarity = joblib.load("models/similarity.joblib")
 
+# Pre-cache title metadata for fast autocomplete suggestions
+MOVIE_TITLES_LIST = [
+    {"id": int(row.id), "title": str(row.title), "lower_title": str(row.title).lower()}
+    for _, row in movies.iterrows()
+]
+
 print("Models loaded successfully")
 print(f"Movies: {len(movies)}")
+
+
+def get_movie_suggestions(query: str, limit: int = 8):
+    """
+    Returns movie title suggestions matching the query string.
+    Prefix matches are prioritized over substring matches.
+    """
+    if not query or not query.strip():
+        return []
+
+    q = query.strip().lower()
+
+    prefix_matches = []
+    contains_matches = []
+
+    for item in MOVIE_TITLES_LIST:
+        lower = item["lower_title"]
+        if lower.startswith(q):
+            prefix_matches.append({"id": item["id"], "title": item["title"]})
+        elif q in lower:
+            contains_matches.append({"id": item["id"], "title": item["title"]})
+
+    return (prefix_matches + contains_matches)[:limit]
+
 
 def get_movie_details(movie_id):
     
@@ -81,4 +111,4 @@ def recommender(movie):
         recommendations.append(details)
 
 
-    return recommendations
+    return recommendations
