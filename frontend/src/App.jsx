@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MovieCard from "../components/MovieCard";
+import SearchAutocomplete from "../components/SearchAutocomplete";
 
 
 function App() {
@@ -7,26 +8,29 @@ function App() {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async () => {
+  const handleSearch = async (targetMovie = movie) => {
+    const queryMovie = targetMovie.trim();
+    if (!queryMovie) return;
 
     setLoading(true);
 
     try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/recommend`,
+        `${apiUrl}/recommend`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ movie }),
+          body: JSON.stringify({ movie: queryMovie }),
         }
       );
 
       const data = await response.json();
 
       if (data.success) {
-        setRecommendations(data.recommendations);
+        setRecommendations(data.recommendations || []);
       }
     } catch (err) {
       console.log(err);
@@ -66,24 +70,19 @@ function App() {
         {/* Search Section */}
         <section className="container mx-auto px-6">
           <div className="relative max-w-4xl mx-auto">
-            <div className="flex gap-4 p-2 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10">
-              <input
-                type="text"
-                value={movie}
-                onChange={(e) => setMovie(e.target.value)}
-                placeholder="Search Avatar, Interstellar, Inception..."
-                className="flex-1 bg-transparent px-6 py-4 outline-none text-lg"
-              />
-
-              <button
-                onClick={handleSearch}
-                className="px-8 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 font-semibold hover:scale-105 transition"
-              >
-                Discover
-              </button>
-            </div>
+            <SearchAutocomplete
+              value={movie}
+              onChange={setMovie}
+              onSelect={(selectedTitle) => {
+                setMovie(selectedTitle);
+                handleSearch(selectedTitle);
+              }}
+              onSearch={() => handleSearch(movie)}
+              disabled={loading}
+            />
           </div>
         </section>
+
 
         <p className="mt-4 text-center text-sm text-amber-300">
           ⚠️ Note: If the application doesn't load movie posters or recommendations,
